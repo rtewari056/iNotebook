@@ -1,7 +1,7 @@
 const express = require("express");
-const User = require("../models/User");
 const router = express.Router();
-const { body, validationResult } = require("express-validator");
+const User = require("../models/User"); // Importing User model
+const { body, validationResult } = require("express-validator"); // Express validator
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchUser = require("../middleware/fetchUser");
@@ -53,7 +53,6 @@ router.post(
 
       // Synchronous Sign with default (HMAC SHA256)
       const token = jwt.sign(data, JWT_SECRET);
-
       res.json({ token });
     } catch (error) {
       console.log(error.message);
