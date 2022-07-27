@@ -52,37 +52,61 @@ router.post(
   }
 );
 
-// ROUTE 3: Update an existing note using: POST '/api/notes/updateNote/:id'. Login required
+// ROUTE 3: Update an existing note using: PUT '/api/notes/updateNote/:id'. Login required
 router.put("/updateNote/:id", fetchUser, async (req, res) => {
   const { title, description, tag } = req.body;
 
-  // Create a newNote object
-  const newNote = {};
+  try {
+    // Create a newNote object
+    const newNote = {};
 
-  if (title) {
-    newNote.title = title;
+    if (title) {
+      newNote.title = title;
+    }
+    if (description) {
+      newNote.description = description;
+    }
+    if (tag) {
+      newNote.tag = tag;
+    }
+
+    // Find the note to be updated
+    let note = await Note.findById(req.params.id);
+    if (!note) return response.status(404).send("Not found");
+
+    // If a logged in user want to access other user's note (Security check)
+    if (note.user.toString() !== req.user.id) return response.status(404).send("Not allowed");
+
+    note = await Note.findByIdAndUpdate(
+      req.params.id,
+      { $set: newNote },
+      { new: true }
+    );
+
+    res.json(note);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal server error");
   }
-  if (description) {
-    newNote.description = description;
+});
+
+// ROUTE 4: Delete an existing note using: DELETE '/api/notes/updateNote/:id'. Login required
+router.delete("/deleteNote/:id", fetchUser, async (req, res) => {
+  try {
+    // Find the note to be deleted
+    let note = await Note.findById(req.params.id);
+    if (!note) return response.status(404).send("Not found");
+
+    // Allow deletion only if user owns this note (Security check)
+    if (note.user.toString() !== req.user.id) return response.status(404).send("Not allowed");
+
+    note = await Note.findByIdAndDelete(req.params.id);
+
+    res.json({ success: "Note has been deleted", note: note });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal server error");
   }
-  if (tag) {
-    newNote.tag = tag;
-  }
-
-  // Find the note to be updated
-  let note = await Note.findById(req.params.id);
-  if (!note) return response.status(404).send("Not found");
-
-  // If a logged in user want to access other user's note (Security check)
-  if (note.user.toString() !== req.user.id) return response.status(404).send("Not allowed");
-
-  note = await Note.findByIdAndUpdate(
-    req.params.id,
-    { $set: newNote },
-    { new: true }
-  );
-
-  res.json(note);
 });
 
 module.exports = router;
