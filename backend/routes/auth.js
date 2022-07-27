@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = "RohitIsaGoodBoy";
 
-// Create a User using: POST "/api/auth/createuser". No login required
+// Create a User using: POST '/api/auth/createuser'. No login required
 router.post(
   "/createuser",
   [
@@ -56,7 +56,56 @@ router.post(
       res.json({ token });
     } catch (error) {
       console.log(error.message);
-      res.status(500).send("Some error occured");
+      res.status(500).send("Internal server error");
+    }
+  }
+);
+
+// Authenticate a user using: POST '/api/auth/login'. No login required
+router.post(
+  "/login",
+  [
+    body("email", "Enter a valid email").isEmail(),
+    body("password", "Password cannot be blank").exists(),
+  ],
+  async (req, res) => {
+    // If there are errors, return bad request and the errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body; // Destructuring from incoming request
+
+    try {
+      let user = await User.findOne({ email }); // Pulling user email from database
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: "Please try to login with correct credentials" });
+      }
+
+      const passwordCompare = await bcrypt.compare(password, user.password); // Returns True if the password entered by the user matches
+
+      if (!passwordCompare) {
+        return res
+          .status(400)
+          .json({ error: "Please try to login with correct credentials" });
+      }
+
+      const data = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      // Sending token if authentication is successful
+      const token = jwt.sign(data, JWT_SECRET);
+      res.json({ token });
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Internal server error");
     }
   }
 );
