@@ -4,7 +4,7 @@ const mongoURI = "mongodb://localhost:27017/iNotebook";
 
 const connectToMongo = async () => {
   mongoose.connect(mongoURI, () => {
-    console.log("Connected to mongoose successfully");
+    console.log("Connected to Mongo DB successfully");
   });
 };
 
