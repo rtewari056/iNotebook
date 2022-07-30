@@ -23,8 +23,8 @@ export default function AddNote() {
   return (
     <div className="container my-3">
       <h1 className="display-6">Add a note</h1>
-      <form className="my-4">
-        <div className="mb-3">
+      <form className="row g-3 my-3">
+        <div className="col-md-6">
           <label htmlFor="title" className="form-label">
             Title
           </label>
@@ -37,7 +37,19 @@ export default function AddNote() {
             onChange={onChange}
           />
         </div>
-        <div className="mb-3">
+        <div className="col-md-6">
+          <label htmlFor="tag" className="form-label">
+            Tag
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="tag"
+            name="tag"
+            onChange={onChange}
+          />
+        </div>
+        <div className="col-md-12">
           <label htmlFor="description" className="form-label">
             Description
           </label>
@@ -49,13 +61,15 @@ export default function AddNote() {
             onChange={onChange}
           />
         </div>
-        <button
-          type="submit"
-          className="btn btn-primary"
-          onClick={handleSubmit}
-        >
-          Add note
-        </button>
+        <div className="col-12">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            onClick={handleSubmit}
+          >
+            Add note
+          </button>
+        </div>
       </form>
     </div>
   );
