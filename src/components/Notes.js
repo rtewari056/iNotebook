@@ -5,23 +5,26 @@ import AddNote from "./AddNote";
 
 export default function Notes() {
   const context = useContext(NoteContext);
-  const { notes, getNotes } = context;
+  const { notes, getNotes, editNote } = context;
   useEffect(() => {
     getNotes();
     // eslint-disable-next-line
   }, []);
 
   const [note, setNote] = useState({
+    id: "",
     editTitle: "",
     editDescription: "",
     editTag: "",
   });
 
   const ref = useRef(null);
+  const refClose = useRef(null);
 
   const updateNote = (currentNote) => {
     ref.current.click();
     setNote({
+      id: currentNote._id,
       editTitle: currentNote.title,
       editDescription: currentNote.description,
       editTag: currentNote.tag,
@@ -29,9 +32,8 @@ export default function Notes() {
   };
 
   const handleSubmit = (e) => {
-    console.log("Dpdating note... ");
-    console.log(note);
-    e.preventDefault(); // Page will not reload
+    editNote(note.id, note.editTitle, note.editTag, note.editDescription);
+    refClose.current.click();
   };
 
   const onChange = (e) => {
@@ -118,13 +120,18 @@ export default function Notes() {
             </div>
             <div className="modal-footer">
               <button
+                ref={refClose}
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
                 Close
               </button>
-              <button type="button" className="btn btn-primary" onClick={handleSubmit}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSubmit}
+              >
                 Update note
               </button>
             </div>

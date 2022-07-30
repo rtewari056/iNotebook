@@ -7,7 +7,7 @@ export default function AddNote() {
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Page will not reload
-    addNote(note.title, note.description, note.tag);
+    addNote(note.title, note.tag, note.description);
   };
 
   const [note, setNote] = useState({
