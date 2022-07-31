@@ -14,7 +14,12 @@ export default function NoteItem(props) {
           <h5 className="card-title">{note.title}</h5>
           <p className="card-text">{note.description}</p>
           <div className="icons">
-            <i className="fas fa-edit me-3" onClick={() => {updateNote(note)}}></i>
+            <i
+              className="fas fa-edit me-3"
+              onClick={() => {
+                updateNote(note);
+              }}
+            ></i>
             <i
               className="fas fa-trash-alt"
               onClick={() => {

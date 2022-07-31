@@ -32,7 +32,12 @@ export default function Notes() {
   };
 
   const handleSubmit = (e) => {
-    editNote(note.id, note.editTitle, note.editTag, note.editDescription);
+    editNote(
+      note.id,
+      note.editTitle,
+      note.editTag.length === 0 ? "General" : note.editTag, // If user leave the tag field empty while editing then set it to general
+      note.editDescription
+    );
     refClose.current.click();
   };
 
@@ -82,13 +87,23 @@ export default function Notes() {
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${
+                      note.editTitle.length === 0
+                        ? ""
+                        : note.editTitle.length < 3
+                        ? "is-invalid"
+                        : "is-valid"
+                      // If nothing is typed then set it to "" else, if title length is <3 then set "is-invalid" else set "is-valid"
+                    }`}
                     id="editTitle"
                     name="editTitle"
                     value={note.editTitle}
                     aria-describedby="emailHelp"
                     onChange={onChange}
                   />
+                  <div className="invalid-feedback">
+                    Title must be atleast 3 characters
+                  </div>
                 </div>
                 <div className="col-md-6">
                   <label htmlFor="editTag" className="form-label">
@@ -109,12 +124,21 @@ export default function Notes() {
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${
+                      note.editDescription.length === 0
+                        ? ""
+                        : note.editDescription.length < 5
+                        ? "is-invalid"
+                        : "is-valid"
+                    }`}
                     id="editDescription"
                     name="editDescription"
                     value={note.editDescription}
                     onChange={onChange}
                   />
+                  <div className="invalid-feedback">
+                    Description must be atleast 5 characters
+                  </div>
                 </div>
               </form>
             </div>
@@ -131,6 +155,13 @@ export default function Notes() {
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSubmit}
+                disabled={
+                  (note.editTitle.length >= 3 &&
+                    note.editDescription.length >= 5) === true
+                    ? false
+                    : true
+                  // If length of the title and description is less than 3 and 5 then only disable the button
+                }
               >
                 Update note
               </button>
@@ -141,6 +172,9 @@ export default function Notes() {
 
       <h1 className="display-6 my-4">Your notes</h1>
       <div className="row">
+        {notes.length === 0 && (
+          <div className="container">No notes to display</div>
+        )}
         {notes.map((note, index) => {
           return <NoteItem key={index} updateNote={updateNote} note={note} />;
         })}
