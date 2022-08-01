@@ -6,20 +6,48 @@ import NoteState from "./context/notes/NoteState";
 import Alert from "./components/Alert";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import { useState } from "react";
 
 function App() {
+  const [alertMessage, setAlertMessage] = useState({ message: "", type: "" });
+  const [dismissAlert, setDismissAlert] = useState("none");
+
+  const showAlert = (message, type) => {
+    setAlertMessage({
+      message: message,
+      type: type,
+    });
+    setDismissAlert("block");
+
+    // To dismiss the alert after 2 seconds
+    setTimeout(() => {
+      setAlertMessage({ message: "", type: "" });
+      setDismissAlert("none");
+    }, 2000);
+  };
+
   return (
     <>
       <NoteState>
         <BrowserRouter>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Home />}></Route>
+            <Route path="/" element={<Home showAlert={showAlert} />}></Route>
             <Route path="/about" element={<About />}></Route>
-            <Route path="/login" element={<Login/>}></Route>
-            <Route path="/signup" element={<Signup />}></Route>
+            <Route
+              path="/login"
+              element={<Login showAlert={showAlert} />}
+            ></Route>
+            <Route
+              path="/signup"
+              element={<Signup showAlert={showAlert} />}
+            ></Route>
           </Routes>
-          <Alert message="This is amazing react course"/>
+          <Alert
+            alertMessage={alertMessage}
+            dismissAlert={dismissAlert}
+            setDismissAlert={setDismissAlert}
+          />
         </BrowserRouter>
       </NoteState>
     </>

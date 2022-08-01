@@ -1,11 +1,10 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login(props) {
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  let navigate = useNavigate();
 
-    const [credentials, setCredentials] = useState({email:"", password:""})
-    let navigate = useNavigate();
-    
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -16,18 +15,22 @@ export default function Login() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
     });
 
     const json = await response.json();
     console.log(json);
 
-    if(json.success) {
-        // Save the auth token and redirect to home page
-        localStorage.setItem("token", json.token);
-        navigate("/");
+    if (json.success) {
+      // Save the auth token and redirect to home page
+      localStorage.setItem("token", json.token);
+      navigate("/");
+      props.showAlert("Logged in successfully", "success");
     } else {
-        alert("Invalid credentials");
+      props.showAlert("Invalid credentials", "danger");
     }
   };
 

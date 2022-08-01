@@ -2,48 +2,35 @@ import React from "react";
 
 export default function Alert(props) {
   return (
-    <div className="toast-container position-static">
-      <div
-        className="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div className="toast-header">
-          <img src="..." className="rounded me-2" alt="..." />
-          <strong className="me-auto">Bootstrap</strong>
-          <small className="text-muted">just now</small>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div className="toast-body">{props.message}</div>
-      </div>
-
-      <div
-        className="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div className="toast-header">
-          <img src="..." className="rounded me-2" alt="..." />
-          <strong className="me-auto">Bootstrap</strong>
-          <small className="text-muted">2 seconds ago</small>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div className="toast-body">
-          Heads up, toasts will stack automatically
+    <>
+      <div className="toast-container position-fixed bottom-0 end-0 p-3">
+        <div
+          className={`toast toast-primary d-${props.dismissAlert} align-items-center`}
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div className="d-flex">
+            <div className="toast-body">
+              <i
+                className={`fas fa-${
+                  props.alertMessage.type === "success" ? "check-circle" : "ban"
+                }`}
+              ></i>{" "}
+              {props.alertMessage.message}
+            </div>
+            <button
+              type="button"
+              className="btn-close me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+              onClick={() => {
+                props.setDismissAlert("none");
+              }}
+            ></button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

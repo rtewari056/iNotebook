@@ -24,6 +24,7 @@ export default function NoteItem(props) {
               className="fas fa-trash-alt"
               onClick={() => {
                 deleteNote(note._id);
+                props.showAlert("Deleted successfully", "success");
               }}
             ></i>
           </div>

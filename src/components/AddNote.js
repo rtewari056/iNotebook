@@ -1,14 +1,19 @@
 import React, { useContext, useState } from "react";
 import NoteContext from "../context/notes/NoteContext";
 
-export default function AddNote() {
+export default function AddNote(props) {
   const context = useContext(NoteContext);
   const { addNote } = context;
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Page will not reload
-    addNote(note.title, note.tag, note.description);
+    addNote(
+      note.title,
+      note.tag.length === 0 ? "General" : note.tag, // If the tag field empty
+      note.description
+    );
     setNote({ title: "", description: "", tag: "" }); // Clear input fields after submit
+    props.showAlert("Note added sucessfully", "success");
   };
 
   const [note, setNote] = useState({

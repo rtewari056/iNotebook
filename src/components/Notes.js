@@ -3,7 +3,7 @@ import NoteContext from "../context/notes/NoteContext";
 import NoteItem from "./NoteItem";
 import AddNote from "./AddNote";
 
-export default function Notes() {
+export default function Notes(props) {
   const context = useContext(NoteContext);
   const { notes, getNotes, editNote } = context;
   useEffect(() => {
@@ -39,6 +39,7 @@ export default function Notes() {
       note.editDescription
     );
     refClose.current.click();
+    props.showAlert("Updated sucessfully", "success");
   };
 
   const onChange = (e) => {
@@ -47,7 +48,7 @@ export default function Notes() {
 
   return (
     <div className="container my-5">
-      <AddNote />
+      <AddNote showAlert={props.showAlert} />
 
       <button
         ref={ref}
@@ -176,7 +177,14 @@ export default function Notes() {
           <div className="container">No notes to display</div>
         )}
         {notes.map((note, index) => {
-          return <NoteItem key={index} updateNote={updateNote} note={note} />;
+          return (
+            <NoteItem
+              key={index}
+              updateNote={updateNote}
+              note={note}
+              showAlert={props.showAlert}
+            />
+          );
         })}
       </div>
     </div>
