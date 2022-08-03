@@ -30,7 +30,7 @@ function App() {
     <>
       <NoteState>
         <BrowserRouter>
-          <Navbar />
+          <Navbar showAlert={showAlert} />
           <Routes>
             <Route path="/" element={<Home showAlert={showAlert} />}></Route>
             <Route path="/about" element={<About />}></Route>
