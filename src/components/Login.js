@@ -39,36 +39,48 @@ export default function Login(props) {
   };
 
   return (
-    <form className="container" onSubmit={handleLogin}>
-      <div className="mb-3">
-        <label htmlFor="email" className="form-label">
-          Email address
-        </label>
-        <input
-          type="email"
-          className="form-control"
-          id="email"
-          name="email"
-          value={credentials.email}
-          onChange={onChange}
-        />
+    <div className=" d-flex justify-content-center align-items-center my-5">
+      <div className="card border-info mb-3" style={{ minWidth: "25rem" }}>
+        <div
+          className="card-header display-6 p-4"
+          style={{ fontSize: "1.6rem" }}
+        >
+          Login to continue using iNotebook
+        </div>
+        <div className="card-body">
+          <form className="container" onSubmit={handleLogin}>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email address
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={credentials.email}
+                onChange={onChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password"
+                value={credentials.password}
+                onChange={onChange}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary">
+              Login
+            </button>
+          </form>
+        </div>
       </div>
-      <div className="mb-3">
-        <label htmlFor="password" className="form-label">
-          Password
-        </label>
-        <input
-          type="password"
-          className="form-control"
-          id="password"
-          name="password"
-          value={credentials.password}
-          onChange={onChange}
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Login
-      </button>
-    </form>
+    </div>
   );
 }
