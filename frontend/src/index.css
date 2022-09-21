@@ -15,3 +15,12 @@ code {
 .fa-edit, .fa-trash-alt{
   cursor: pointer; /* For edit and delete icons */
 }
+
+a, a:hover, a:focus, a:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  opacity: 60%;
+}
