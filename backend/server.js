@@ -2,10 +2,10 @@ const connectToMongo = require("./db");
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-connectToMongo();
 
 const app = express();
 dotenv.config();
+connectToMongo();
 const port = process.env.PORT || 5000; // As port 3000 occupied by React App
 
 app.use(express.json());

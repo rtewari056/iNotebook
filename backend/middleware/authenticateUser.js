@@ -29,7 +29,12 @@ const fetchUser = (req, res, next) => {
       }
     );
   } catch (error) {
-    res.status(401).send({ error: "Internal server error" });
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Internal server error",
+      error,
+    });
   }
 };
 

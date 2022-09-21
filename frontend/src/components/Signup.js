@@ -36,9 +36,8 @@ export default function Signup(props) {
       const json = await response.json();
 
       if (json.success) {
-        // Save the auth token and redirect to home page
-        localStorage.setItem("token", json.token);
-        navigate("/");
+        // Redirect to login page
+        navigate("/login");
         props.showAlert("Account created successfully", "success");
       } else {
         props.showAlert("Invalid credentials", "danger");
