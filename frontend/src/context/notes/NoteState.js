@@ -2,14 +2,13 @@ import { useState } from "react";
 import NoteContext from "./NoteContext";
 
 const NoteState = (props) => {
-  const host = "http://localhost:5000";
-  const allNotes = []; // Empty array to store notes
-  const [notes, setNotes] = useState(allNotes);
+  const hostName = "http://localhost:5000";
+  const [notes, setNotes] = useState([]); // Empty array to store notes
 
   // Get all notes
   const getNotes = async () => {
     // API call
-    const url = `${host}/api/notes/fetchAllNotes`;
+    const url = `${hostName}/api/notes/fetchAllNotes`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -18,13 +17,13 @@ const NoteState = (props) => {
       },
     });
     const json = await response.json();
-    setNotes(json);
+    setNotes(json.notes);
   };
 
   // Add a note
   const addNote = async (title, tag, description) => {
     // API call
-    const url = `${host}/api/notes/addNote`;
+    const url = `${hostName}/api/notes/addNote`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -34,32 +33,15 @@ const NoteState = (props) => {
       body: JSON.stringify({ title, tag, description }),
     });
 
-    const note = await response.json();
-    setNotes(notes.concat(note));
-  };
-
-  // Delete a note
-  const deleteNote = async (id) => {
-    // API call
-    const url = `${host}/api/notes/deleteNote/${id}`;
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    });
     const json = await response.json();
-    console.log(json);
-
-    setNotes(notes.filter((note) => note._id !== id)); // Filter the deleted note and set the remaining notes
+    setNotes(notes.concat(json.savedNote));
   };
 
-  // Edit a note
+  // Update a note
   const editNote = async (id, title, tag, description) => {
     // API call
-    const url = `${host}/api/notes/updateNote/${id}`;
-    const response = await fetch(url, {
+    const url = `${hostName}/api/notes/updateNote/${id}`;
+    await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -67,8 +49,6 @@ const NoteState = (props) => {
       },
       body: JSON.stringify({ title, tag, description }),
     });
-    const json = await response.json();
-    console.log(json);
 
     let newNotes = JSON.parse(JSON.stringify(notes));
 
@@ -86,9 +66,24 @@ const NoteState = (props) => {
     setNotes(newNotes);
   };
 
+  // Delete a note
+  const deleteNote = async (id) => {
+    // API call
+    const url = `${hostName}/api/notes/deleteNote/${id}`;
+    await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+
+    setNotes(notes.filter((note) => note._id !== id)); // Filter the deleted note and set the remaining notes
+  };
+
   return (
     <NoteContext.Provider
-      value={{ notes, addNote, deleteNote, editNote, getNotes }}
+      value={{ hostName, notes, addNote, deleteNote, editNote, getNotes }}
     >
       {props.children}
     </NoteContext.Provider>

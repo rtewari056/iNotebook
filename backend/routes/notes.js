@@ -1,25 +1,43 @@
 const express = require("express");
 const router = express.Router();
-const fetchUser = require("../middleware/fetchUser");
+const authenticateUser = require("../middleware/authenticateUser");
 const Note = require("../models/Note"); // Importing Notes model
 const { body, validationResult } = require("express-validator"); // Express validator
-const { response } = require("express");
 
 // ROUTE 1: Get all the notes using: GET '/api/notes/fetchAllNotes'. Login required
-router.get("/fetchAllNotes", fetchUser, async (req, res) => {
+router.get("/fetchAllNotes", authenticateUser, async (req, res) => {
   try {
-    const notes = await Note.find({ user: req.user.id });
-    res.json(notes);
+    const notes = await Note.find({ user: req.id }).exec();
+
+    if (!notes) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        notes: [], // Send empty array if notes not found
+        message: "No Data Found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      notes,
+      message: "Data sent successfully!",
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal server error");
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Internal server error",
+      error,
+    });
   }
 });
 
 // ROUTE 2: Add a new note using: POST '/api/notes/addNote'. Login required
 router.post(
   "/addNote",
-  fetchUser,
+  authenticateUser,
   [
     body("title", "Enter a valid title").isLength({ min: 3 }),
     body("description", "Description must be atleast 5 characters").isLength({
@@ -28,84 +46,125 @@ router.post(
   ],
   async (req, res) => {
     try {
-      const { title, description, tag } = req.body;
-
       // If there are errors, return bad request and the errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({
+          success: false,
+          statusCode: 400,
+          message: errors.array()[0].msg,
+          errors: errors.array(),
+        });
       }
 
-      const note = new Note({
-        user: req.user.id,
+      const { title, description, tag } = req.body; // Destructuring from incoming request
+
+      const savedNote = await Note.create({
+        user: req.id, // To notes with logged in user id
         title,
         description,
         tag,
       });
 
-      const savedNote = await note.save();
-      res.json(savedNote);
+      return res.status(200).json({
+        success: true,
+        statusCode: 200,
+        savedNote, // Sending recently saved note
+        message: "Note saved successfully!",
+      });
     } catch (error) {
-      console.log(error.message);
-      res.status(500).send("Internal server error");
+      return res.status(500).json({
+        success: false,
+        statusCode: 500,
+        message: "Internal server error",
+        error,
+      });
     }
   }
 );
 
 // ROUTE 3: Update an existing note using: PUT '/api/notes/updateNote/:id'. Login required
-router.put("/updateNote/:id", fetchUser, async (req, res) => {
-  const { title, description, tag } = req.body;
-
+router.put("/updateNote/:id", authenticateUser, async (req, res) => {
   try {
-    // Create a newNote object
-    const newNote = {};
-
-    if (title) {
-      newNote.title = title;
-    }
-    if (description) {
-      newNote.description = description;
-    }
-    if (tag) {
-      newNote.tag = tag;
-    }
-
     // Find the note to be updated
-    let note = await Note.findById(req.params.id);
-    if (!note) return response.status(404).send("Not found");
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(409).json({
+        success: false,
+        statusCode: 409,
+        message: "Sorry! Note does not exist",
+      });
+    }
 
-    // If a logged in user want to access other user's note (Security check)
-    if (note.user.toString() !== req.user.id) return response.status(404).send("Not allowed");
+    // If a logged in user want to access other user's note (Important Security check)
+    if (note.user.toString() !== req.id) {
+      return res.status(403).json({
+        success: false,
+        statusCode: 403,
+        message: "Not allowed",
+      });
+    }
 
-    note = await Note.findByIdAndUpdate(
+    // Finally update note
+    await Note.findByIdAndUpdate(
       req.params.id,
-      { $set: newNote },
+      { $set: req.body },
       { new: true }
     );
 
-    res.json(note);
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Note updated successfully",
+    });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Internal server error");
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Internal server error",
+      error,
+    });
   }
 });
 
-// ROUTE 4: Delete an existing note using: DELETE '/api/notes/updateNote/:id'. Login required
-router.delete("/deleteNote/:id", fetchUser, async (req, res) => {
+// ROUTE 4: Delete an existing note using: DELETE '/api/notes/deleteNote/:id'. Login required
+router.delete("/deleteNote/:id", authenticateUser, async (req, res) => {
   try {
     // Find the note to be deleted
     let note = await Note.findById(req.params.id);
-    if (!note) return response.status(404).send("Not found");
+    if (!note) {
+      return res.status(409).json({
+        success: false,
+        statusCode: 409,
+        message: "Sorry! Note does not exist",
+      });
+    }
 
-    // Allow deletion only if user owns this note (Security check)
-    if (note.user.toString() !== req.user.id) return response.status(404).send("Not allowed");
+    // Allow deletion only if user owns this note (Important Security check)
+    if (note.user.toString() !== req.id) {
+      return res.status(403).json({
+        success: false,
+        statusCode: 403,
+        message: "Not allowed",
+      });
+    }
 
-    note = await Note.findByIdAndDelete(req.params.id);
+    // Finally delete the note
+    await Note.findByIdAndDelete(req.params.id);
 
-    res.json({ success: "Note has been deleted", note: note });
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Note deleted successfully",
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal server error");
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Internal server error",
+      error,
+    });
   }
 });
 

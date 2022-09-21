@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import NoteContext from "../context/notes/NoteContext";
 
 export default function Login(props) {
+  const context = useContext(NoteContext);
+  const { hostName } = context;
+
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   let navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const url = "http://localhost:5000/api/auth/login";
+    const url = `${hostName}/api/auth/login`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -22,7 +26,6 @@ export default function Login(props) {
     });
 
     const json = await response.json();
-    console.log(json);
 
     if (json.success) {
       // Save the auth token and redirect to home page

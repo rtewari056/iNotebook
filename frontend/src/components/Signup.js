@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import NoteContext from "../context/notes/NoteContext";
 
 export default function Signup(props) {
+  const context = useContext(NoteContext);
+  const { hostName } = context;
+
   const [credentials, setCredentials] = useState({
     name: "",
     email: "",
@@ -15,7 +19,7 @@ export default function Signup(props) {
     e.preventDefault();
 
     if (credentials.password === confirmPassword) {
-      const url = "http://localhost:5000/api/auth/createuser";
+      const url = `${hostName}/api/auth/createuser`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -30,7 +34,6 @@ export default function Signup(props) {
       });
 
       const json = await response.json();
-      console.log(json);
 
       if (json.success) {
         // Save the auth token and redirect to home page

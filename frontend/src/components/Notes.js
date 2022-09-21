@@ -64,9 +64,7 @@ export default function Notes(props) {
         className="btn btn-primary d-none"
         data-bs-toggle="modal"
         data-bs-target="#exampleModal"
-      >
-        Launch demo modal
-      </button>
+      />
 
       <div
         className="modal fade"
@@ -79,14 +77,14 @@ export default function Notes(props) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">
-                Modal title
+                Update Note
               </h5>
               <button
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-              ></button>
+              />
             </div>
             <div className="modal-body">
               <form className="row g-3">
@@ -116,7 +114,7 @@ export default function Notes(props) {
                 </div>
                 <div className="col-md-6">
                   <label htmlFor="editTag" className="form-label">
-                    Tag
+                    Tag (Optional)
                   </label>
                   <input
                     type="text"

@@ -57,7 +57,7 @@ export default function AddNote(props) {
           </div>
           <div className="col-md-6">
             <label htmlFor="tag" className="form-label">
-              Tag
+              Tag (Optional)
             </label>
             <input
               type="text"
